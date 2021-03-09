@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { CrosswordProvider } from './context';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <CrosswordProvider>
+        <App />
+      </CrosswordProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

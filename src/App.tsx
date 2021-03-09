@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import { useCrosswordState } from './context';
+import Form from './components/Form';
+import React from 'react';
+import CrosswordBoard from './components/CrosswordBoard';
 
-function App() {
+const App = () => {
+  const { wordsCollection } = useCrosswordState();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="crossword-app">
+        <div className="container">
+          <div className="row">
+            <h1 className="crossword-app__title">Crossword App</h1>
+          </div>
+          <div className="row">
+            <Form />
+          </div>
+          {
+            wordsCollection.length > 0  ? (
+              <CrosswordBoard />
+            ) : <p>No words found.</p>
+          }
+        </div>
+        
     </div>
   );
 }

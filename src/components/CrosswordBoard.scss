@@ -1,0 +1,11 @@
+.crossword-board {
+    width: 800px;
+    &__cell {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #333;
+    }
+}
