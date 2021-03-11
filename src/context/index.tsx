@@ -6,7 +6,7 @@ const initialState: IState = {
     wordsCollection: [],
     addedWords: [],
     direction: 'down',
-    startX: 5, 
+    startX: 10, 
     startY: 5,
     lastAddedWordMap: new Map<string, CrossboardPosition>()
 }

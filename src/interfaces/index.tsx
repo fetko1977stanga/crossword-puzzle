@@ -22,6 +22,7 @@ export interface AddedWordInfo {
     word: string;
     startX: number;
     startY: number;
+    direction: string;
 }
 
 export interface WordsIndexes {

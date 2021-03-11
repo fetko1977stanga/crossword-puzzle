@@ -1,4 +1,4 @@
-import { AddedWordInfo, IAction, WordsIndexes } from "../interfaces";
+import { AddedWordInfo, CrossboardPosition, IAction, WordsIndexes } from "../interfaces";
 
 export const splitWords = (input: string): string[] => {
     const re = /\s*(?:,|$)\s*/
@@ -48,16 +48,54 @@ export const checkVertical = (word: string, crosswordBoard: string[][], startX: 
     return true;
 }
 
-export const isWordCanBeAdded = (word: string, crosswordBoard: string[][], direction: string, startX: number, startY: number): boolean => {
+export const isWordCanBeAdded = (word: string, crosswordBoard: string[][], direction: string, startX: number, startY: number, addedWords: AddedWordInfo[]): boolean => {
     let wordLength = word.length;
     let charIndex = 0;
-    //console.log('isWordCanBeAdded is called with', crosswordBoard);
+    addedWords.forEach(addedWord => {
+        if (word === addedWord.word) {
+            return false;
+        }
+    });
+
     if (direction === 'down') {
+        if (startY - 1 < 0) {
+            return false;
+        }
+
+        if(crosswordBoard[startY - 1][startX] !== null) {
+            return false;
+        }
+
+        if (startY + wordLength > crosswordBoard.length - 1) {
+            return false;
+        }
+
+        if (startY + wordLength + 1 > crosswordBoard.length - 1) {
+            return false;
+        }
+
+        if ([startY + wordLength + 1][startX] !== null) {
+            return false;
+        }
+
         while (charIndex < wordLength) {
             if (startY < crosswordBoard.length) {
                 if (crosswordBoard[startY][startX] !== null && crosswordBoard[startY][startX] !== word[charIndex]) {
                     return false;
                 }
+
+                if (startX - 1 < 0) {
+                    return false;
+                }
+
+                if (startX + 1 >= crosswordBoard.length) {
+                    return false;
+                }
+
+                if (crosswordBoard[startY][startX] === null && (crosswordBoard[startY][startX - 1] !== null || crosswordBoard[startY][startX + 1] !== null)) {
+                    return false;
+                }
+
                 charIndex++;
                 startY++;
             } else {
@@ -65,11 +103,44 @@ export const isWordCanBeAdded = (word: string, crosswordBoard: string[][], direc
             }
         }
     } else {
+        if (startX - 1 < 0) {
+            return false;
+        }
+
+        if (crosswordBoard[startY][startX - 1] !== null) {
+            return false;
+        }
+
+        if (startX + wordLength > crosswordBoard.length - 1) {
+            return false;
+        }
+
+        if (startX + wordLength + 1 > crosswordBoard.length - 1) {
+            return false;
+        }
+
+        if (crosswordBoard[startY][startX + wordLength + 1] !== null) {
+            return false;
+        }
+
         while (charIndex < wordLength) {
             if (startY < crosswordBoard.length && startX < crosswordBoard[startY].length) {
                 if (crosswordBoard[startY][startX] !== null && crosswordBoard[startY][startX] !== word[charIndex]) {
                     return false;
                 }
+
+                if (startY - 1 < 0) {
+                    return false;
+                }
+
+                if (startY + 1 >= crosswordBoard.length) {
+                    return false;
+                }
+
+                if (crosswordBoard[startY][startX] === null && (crosswordBoard[startY - 1][startX] !== null || crosswordBoard[startY + 1][startX] !== null)) {
+                    return false;
+                }
+
                 charIndex++;
                 startX++;
             } else {
@@ -82,19 +153,19 @@ export const isWordCanBeAdded = (word: string, crosswordBoard: string[][], direc
     return true;
 }
 
-export const findFirstInterception = (word: string, newWord: string): WordsIndexes | number => {
-    let index = -1;
+export const findInterceptions = (word: string, newWord: string): WordsIndexes[] => {
+    let indexes: WordsIndexes[] = [];
 
     for (let charIndex = 0; charIndex < newWord.length; charIndex++) {
         const character = newWord[charIndex];
         if (word.includes(character)) {
             //console.log(`word - ${word} - ${word.indexOf(character)}`, `currentWord - ${newWord} - ${newWord.indexOf(character)}`);
-            return { wordIndex: word.indexOf(character), newWordIndex: newWord.indexOf(character)};
+            indexes.push({ wordIndex: word.indexOf(character), newWordIndex: newWord.indexOf(character)});
         }
         
     }
 
-    return index;
+    return indexes;
 }
 
 export const isWordCollectionValid = (wordCollection: string[]) => {
@@ -108,7 +179,9 @@ export const isWordCollectionValid = (wordCollection: string[]) => {
                 continue;
             }
 
-            if (findFirstInterception(outerWord, innerWord) !== -1) {
+            let interception:WordsIndexes[] = findInterceptions(outerWord, innerWord)
+            
+            if (interception.length > 0) {
                 break;
             }
 
@@ -136,57 +209,84 @@ export const addWordToBoard = (word: string, crosswordBoard: string[][], startX:
     }
   };
 
-  export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: string[][], index: number, startX: number, startY: number, direction: string, dispatch: React.Dispatch<IAction>) => {
-    if (index < wordsCollection.length) {
-        const currentWord = wordsCollection[index];
-        let wordInfo: AddedWordInfo = { word: currentWord, startX, startY};
-        
-        if (direction === 'down') {
-            if (isWordCanBeAdded(currentWord, crosswordBoard, direction, startX, startY)) {
-                addWordToBoard(currentWord, crosswordBoard, startX, startY, direction, dispatch);
-                dispatch({ type: 'ADDED_WORD', payload: wordInfo});
-
-                if (index < wordsCollection.length - 1) {
-                    let indexes: WordsIndexes | number = findFirstInterception(currentWord, wordsCollection[index + 1]);
-                    if (indexes === -1) {
-                        return;
-                    }
-                    const {wordIndex, newWordIndex }: any = indexes;
-                    console.log(`Added word is ${currentWord} at X - ${startX} and at Y - ${startY}`);
-                    startX -= newWordIndex;
-                    startY += wordIndex;
-                    dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX, startY }});
-                    
-                    console.log(`New word to be added is ${wordsCollection[index + 1]} at X - ${startX} and at Y - ${startY}`);
-                    dispatch({ type: 'UPDATE_DIRECTION', payload: { direction: 'right' }});
-                }
-            } else {
-                return console.log('Cannot be added');
-            }
+  const getNewCordinates = (startX: number, startY: number, wordIndex: number, newWordIndex: number, direction: string) : CrossboardPosition => {
+        if (direction === 'right') {
+            startX -= newWordIndex;
+            startY += wordIndex;
         } else {
-            if (isWordCanBeAdded(currentWord, crosswordBoard, direction, startX, startY)) {
-                addWordToBoard(currentWord, crosswordBoard, startX, startY, direction, dispatch);
-                dispatch({ type: 'ADDED_WORD', payload: wordInfo});
-                if (index < wordsCollection.length - 1) {
-                    let indexes: WordsIndexes | number = findFirstInterception(currentWord, wordsCollection[index + 1]);
-                        if (indexes === -1) {
-                            return;
-                        }
-                    const {wordIndex, newWordIndex }: any = indexes;
-                    console.log(`Added word is ${currentWord} at X - ${startX} and at Y - ${startY}`);
-                    startX += wordIndex;
-                    startY -= newWordIndex;
-
-                    dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX, startY }});
-                    console.log(`New word to be added is ${wordsCollection[index + 1]} at X - ${startX} and at Y - ${startY}`);
-                    dispatch({ type: 'UPDATE_DIRECTION', payload: { direction: 'down' }});
-                }
-            } else {
-                console.log('Cannot be added');
-            }
-          
+            startX += wordIndex;
+            startY -= newWordIndex;
         }
-        
 
+        return { xPosition: startX, yPosition: startY };
+  }
+
+  export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: string[][], index: number, startX: number, startY: number, direction: string, dispatch: React.Dispatch<IAction>, addedWords: AddedWordInfo[]) => {
+    // if (index < wordsCollection.length) {
+        
+    // }
+    const currentWord = wordsCollection[index];
+    let wordInfo: AddedWordInfo = { word: currentWord, startX, startY, direction};
+    let currentWordAdded = false;
+
+    if (index === 0) {
+        addWordToBoard(currentWord, crosswordBoard, startX, startY, direction, dispatch);
+        dispatch({ type: 'ADDED_WORD', payload: wordInfo});
+        console.log(`Added word - ${currentWord} - startX: ${startX}, startY: ${startY}, direction: ${direction}`);
+        dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX, startY }});
+        direction = direction === 'down' ? 'right' : 'down';
+        dispatch({ type: 'UPDATE_DIRECTION', payload: { direction }});
+        currentWordAdded = true;
+    } else {
+        for(let index = addedWords.length - 1; index >= 0; index--) {
+            let { word, startX, startY, direction: wordDirection } = addedWords[index];
+            
+            let interceptionsIndexes: WordsIndexes[] = findInterceptions(word, currentWord);
+
+            if (interceptionsIndexes.length === 0) {
+                continue;
+            }
+
+            if (wordDirection === direction) {
+                direction = direction === 'down' ? 'right' : 'down';
+            }
+
+            let interceptionCollectionIndex:number = 0;
+            //console.log(`Word - ${word} with Current Word ${currentWord} has following intersections - `);
+            //interceptionsIndexes.forEach(interception => console.log(interception));
+            while (interceptionCollectionIndex < interceptionsIndexes.length) {
+                const {wordIndex, newWordIndex }: any = interceptionsIndexes[interceptionCollectionIndex];
+                let {xPosition, yPosition} = getNewCordinates(startX, startY, wordIndex, newWordIndex, direction);
+
+                if (isWordCanBeAdded(currentWord, crosswordBoard, direction, xPosition, yPosition, addedWords)) {
+                    addWordToBoard(currentWord, crosswordBoard, xPosition, yPosition, direction, dispatch);
+                    wordInfo = { word: currentWord, startX: xPosition, startY: yPosition, direction};
+                    dispatch({ type: 'ADDED_WORD', payload: wordInfo});
+                    console.log(`Added word - ${currentWord} - startX: ${xPosition}, startY: ${yPosition}, direction: ${direction}`);
+                    dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX: xPosition, startY: yPosition }});
+                    direction = direction === 'down' ? 'right' : 'down';
+                    dispatch({ type: 'UPDATE_DIRECTION', payload: { direction }});
+                    currentWordAdded = true;
+                    return;
+                } else {
+                    interceptionCollectionIndex++;
+                }
+            }
+        }
+
+        if (!currentWordAdded) {
+            //TODO: If word is not added we move it in the back of the collection and start again
+            if (index < wordsCollection.length - 1) {
+                console.log(`Word ${currentWord} was not aadded`);
+                const wordsCollectionCopy = [...wordsCollection];
+                const removedWord: string[]= wordsCollectionCopy.splice(index, 1);
+                const newWordsCollection:string[] = [...wordsCollectionCopy, removedWord[0]];
+            
+                dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: newWordsCollection });
+                return;
+            } else {
+                return console.log(`Word ${currentWord} can't be added on current board`);
+            }
+        }
     }
 };

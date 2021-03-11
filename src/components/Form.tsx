@@ -25,7 +25,8 @@ const Form = () => {
       if (isWordCollectionValid(wordsCollection)) {
            // Sort collection by word length desc
           wordsCollection.sort((a, b) => b.length - a.length);
-
+          console.log(wordsCollection);
+    
           dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: wordsCollection });
       } else {
         //TODO: implement error message to show if collection is not valid
