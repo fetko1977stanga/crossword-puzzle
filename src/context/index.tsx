@@ -2,12 +2,13 @@ import React from 'react';
 import { IState, IAction, CrossboardPosition } from '../interfaces';
 
 const initialState: IState = {
-    crosswordBoard: new Array(20).fill(new Array(20).fill(null)),
+    crosswordBoard: new Array(25).fill(new Array(25).fill(null)),
     wordsCollection: [],
     addedWords: [],
+    rotatedWords: [],
     direction: 'down',
-    startX: 10, 
-    startY: 5,
+    startX: 12, 
+    startY: 12,
     lastAddedWordMap: new Map<string, CrossboardPosition>()
 }
 
@@ -33,8 +34,14 @@ function crosswordReducer(state: IState, action: IAction) {
             return { ...state, startX: action.payload.startX, startY: action.payload.startY };
         case 'UPDATE_DIRECTION':
             return { ...state, direction: action.payload.direction };
+        case 'UPDATE_ROTATED_WORDS_COLLECTION':
+                return {...state, rotatedWords: [...state.rotatedWords, action.payload]}
+        case 'RESET_ROTATED_WORDS_COLLECTION':
+            return {...state, rotatedWords: []}
         case 'ADDED_WORD':
             return {...state, addedWords: [...state.addedWords, action.payload]}
+        case 'RESET_ADDED_WORDS_COLLECTION':
+            return {...state, addedWords: []}
         case 'LAST_ADDED_WORD_MAP':
             let lastAddedWordMap = action.payload;
             return { ...state, lastAddedWordMap };

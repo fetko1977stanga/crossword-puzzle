@@ -1,9 +1,9 @@
 import './CrosswordBoard.scss';
 
-const CrosswordBoardCell = ({ value } : any) => {
+const CrosswordBoardCell = ({ value, index } : any) => {
   
   return (
-    <div className="crossword-board__cell">
+    <div className="crossword-board__cell" style={{ content: index }}>
         { value }
     </div>
   )

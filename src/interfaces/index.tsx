@@ -2,6 +2,7 @@ export interface IState {
     crosswordBoard: [][],
     wordsCollection: string[],
     addedWords: Array<AddedWordInfo>,
+    rotatedWords: Array<AddedWordInfo>
     direction: string;
     startX: number;
     startY: number;

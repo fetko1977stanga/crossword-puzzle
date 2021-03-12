@@ -1,13 +1,13 @@
 import React, { FormEvent, useState } from 'react';
 import './Form.scss';
-import { splitWords, isInputValid, isWordCollectionValid } from '../functions';
+import { splitWords, isInputValid, isWordCollectionValid, sortWordsCollectionByWordsInterceptions } from '../functions';
 import { useCrosswordDispatch } from '../context';
 import { IAction } from '../interfaces';
 
 const Form = () => {
   const [ wordsValue, setWordsValue ] = useState('');
   const dispatch:React.Dispatch<IAction> = useCrosswordDispatch();
-
+  
   const handleChange = (e: FormEvent<HTMLTextAreaElement>) => {
     const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
     const value: string = target.value;
@@ -23,11 +23,10 @@ const Form = () => {
       const wordsCollection: string[] = splitWords(wordsValue);
 
       if (isWordCollectionValid(wordsCollection)) {
-           // Sort collection by word length desc
-          wordsCollection.sort((a, b) => b.length - a.length);
-          console.log(wordsCollection);
+          // Sort collection by words interceptions
+          const sortedArray = sortWordsCollectionByWordsInterceptions(wordsCollection);
     
-          dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: wordsCollection });
+          dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
       } else {
         //TODO: implement error message to show if collection is not valid
           console.log('Not valid collection');

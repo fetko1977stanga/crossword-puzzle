@@ -7,7 +7,7 @@ import CrosswordBoardCell from './CrosswordBoardCell';
 
 const CrosswordBoard = () => {
   const dispatch:React.Dispatch<IAction> = useCrosswordDispatch();
-  const { wordsCollection, crosswordBoard, addedWords, direction, startX, startY } = useCrosswordState();
+  const { wordsCollection, crosswordBoard, addedWords, rotatedWords, direction, startX, startY } = useCrosswordState();
 
   const renderCrosswordBoardCell = () => {
     const rows = crosswordBoard.map(row => {
@@ -19,8 +19,8 @@ const CrosswordBoard = () => {
 
   useEffect(() => {
     let index = addedWords.length;
-    addWordsToBoard(wordsCollection, crosswordBoard, index, startX, startY, direction, dispatch, addedWords);
-}, [wordsCollection, addedWords, crosswordBoard, dispatch, startX, startY, direction ]);
+    addWordsToBoard(wordsCollection, crosswordBoard, index, startX, startY, direction, dispatch, addedWords, rotatedWords);
+}, [wordsCollection, addedWords, rotatedWords, crosswordBoard, dispatch, startX, startY, direction ]);
 
   return (
     <div className="crossword-board">
