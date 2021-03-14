@@ -145,8 +145,18 @@ export const isWordCollectionValid = (wordCollection: string[]) => {
             const innerWord = wordCollection[innerIndex];
 
             if (outerIndex === innerIndex) {
-                continue;
+                if (innerIndex === wordCollection.length - 1 && intercepting === false) {
+                    return false;
+                } else {
+                    continue;
+                }
             }
+
+            if (outerWord.length < 3 || innerWord.length < 3) {
+                return false;
+            }
+
+
 
             let interception:WordsIndexes[] = findInterceptions(outerWord, innerWord)
             
