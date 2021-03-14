@@ -1,5 +1,5 @@
 import React from 'react';
-import { IState, IAction, CrossboardPosition } from '../interfaces';
+import { IState, IAction } from '../interfaces';
 
 const initialState: IState = {
     crosswordBoard: new Array(25).fill(new Array(25).fill(null)),
@@ -9,7 +9,7 @@ const initialState: IState = {
     direction: 'down',
     startX: 12, 
     startY: 12,
-    lastAddedWordMap: new Map<string, CrossboardPosition>()
+    errorMessage: ''
 }
 
 const defaultAction: React.Dispatch<IAction> = () => {};
@@ -40,11 +40,10 @@ function crosswordReducer(state: IState, action: IAction) {
             return {...state, rotatedWords: []}
         case 'ADDED_WORD':
             return {...state, addedWords: [...state.addedWords, action.payload]}
+        case 'SET_ERROR_MESSAGE':
+            return {...state, errorMessage: action.payload !== '' ? action.payload : ''}
         case 'RESET_ADDED_WORDS_COLLECTION':
             return {...state, addedWords: []}
-        case 'LAST_ADDED_WORD_MAP':
-            let lastAddedWordMap = action.payload;
-            return { ...state, lastAddedWordMap };
         default: {
             throw new Error(`Unhandled action type: ${action.type}`);
         }

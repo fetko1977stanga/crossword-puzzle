@@ -1,9 +1,9 @@
 import './CrosswordBoard.scss';
 
 const CrosswordBoardCell = ({ value, index } : any) => {
-  
+  const classValue:string = value === null ? 'crossword-board__cell' : 'crossword-board__cell crossword-board__cell--with-value';
   return (
-    <div className="crossword-board__cell" style={{ content: index }}>
+    <div className={classValue}>
         { value }
     </div>
   )

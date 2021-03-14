@@ -15,11 +15,13 @@ const App = () => {
           <div className="row">
             <Form />
           </div>
+          <div className="row">
           {
             wordsCollection.length > 0  ? (
               <CrosswordBoard />
-            ) : <p>No words found.</p>
+            ) : null
           }
+          </div>
         </div>
         
     </div>

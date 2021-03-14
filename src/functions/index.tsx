@@ -221,7 +221,7 @@ export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: strin
         if (index === 0) {
             addWordToBoard(currentWord, crosswordBoard, startX, startY, direction, dispatch);
             dispatch({ type: 'ADDED_WORD', payload: wordInfo});
-            console.log(`Added word - ${currentWord} - startX: ${startX}, startY: ${startY}, direction: ${direction}`);
+            // console.log(`Added word - ${currentWord} - startX: ${startX}, startY: ${startY}, direction: ${direction}`);
             dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX, startY }});
             direction = direction === 'down' ? 'right' : 'down';
             dispatch({ type: 'UPDATE_DIRECTION', payload: { direction }});
@@ -250,7 +250,7 @@ export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: strin
                         addWordToBoard(currentWord, crosswordBoard, xPosition, yPosition, direction, dispatch);
                         wordInfo = { word: currentWord, startX: xPosition, startY: yPosition, direction};
                         dispatch({ type: 'ADDED_WORD', payload: wordInfo});
-                        console.log(`Added word - ${currentWord} - startX: ${xPosition}, startY: ${yPosition}, direction: ${direction}`);
+                        // console.log(`Added word - ${currentWord} - startX: ${xPosition}, startY: ${yPosition}, direction: ${direction}`);
                         dispatch({ type: 'UPDATE_STARTING_POINTS', payload: { startX: xPosition, startY: yPosition }});
                         direction = direction === 'down' ? 'right' : 'down';
                         dispatch({ type: 'UPDATE_DIRECTION', payload: { direction }});
@@ -265,7 +265,7 @@ export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: strin
             if (!currentWordAdded) {
                 //TODO: If word is not added we move it in the back of the collection and start again
                 if (rotatedWords.length < wordsCollection.length - addedWords.length) {
-                    console.log(`Word ${currentWord} was not aadded`);
+                    // console.log(`Word ${currentWord} was not aadded`);
                     const wordsCollectionCopy = [...wordsCollection];
                     const removedWord: string[]= wordsCollectionCopy.splice(index, 1);
                     const newWordsCollection:string[] = [...wordsCollectionCopy, removedWord[0]];
@@ -286,7 +286,7 @@ export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: strin
                         const sortedArray = wordsCollection.sort((a, b) => b.length - a.length);
                         dispatch({ type: 'RESET_BOARD'});
                         dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
-                        return console.log(`one word is left - ${currentWord} and index is ${index} and words collection is ${wordsCollection}`);
+                        return; // console.log(`one word is left - ${currentWord} and index is ${index} and words collection is ${wordsCollection}`);
                     }
                 }
             }

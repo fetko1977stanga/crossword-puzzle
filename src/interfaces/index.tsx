@@ -6,7 +6,7 @@ export interface IState {
     direction: string;
     startX: number;
     startY: number;
-    lastAddedWordMap: Map<string, CrossboardPosition>
+    errorMessage: string;
 }
 
 export interface IAction {
