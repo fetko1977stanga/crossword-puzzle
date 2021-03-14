@@ -3,7 +3,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 # NodeJs version -
-    NodeJs version: 14.15.4
+    Version: 14.15.4
 
 
 ## Available Scripts
