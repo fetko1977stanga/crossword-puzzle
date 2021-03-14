@@ -30,32 +30,33 @@ const Form = () => {
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if(isInputValid(wordsValue)) {
-      
-      const wordsCollection: string[] = splitWords(wordsValue).map(word => word.toUpperCase());
+      e.preventDefault();
+      if(isInputValid(wordsValue)) {
+        
+          const wordsCollection: string[] = splitWords(wordsValue).map(word => word.toUpperCase());
 
-      // We check here if words collection length is less than 10 and if it is we set error
-      if (wordsCollection.length < 10) {
-          dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The minimum words to build the crossword board is 10. You've added just ${wordsCollection.length}`})
-          return;
-      }
+          // We check here if words collection length is less than 10 and if it is we set error
+          if (wordsCollection.length < 10) {
+              dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The minimum words to build the crossword board is 10. You've added just ${wordsCollection.length}`})
+              return;
+          }
 
-      if (isWordCollectionValid(wordsCollection)) {
-          // Sort collection by words interceptions by ascending order
-          const sortedArray = sortWordsCollectionByWordsInterceptions(wordsCollection);
-    
-          dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
+          if (isWordCollectionValid(wordsCollection)) {
+              // Sort collection by words interceptions by ascending order
+              const sortedArray = sortWordsCollectionByWordsInterceptions(wordsCollection);
+        
+              dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
+          } else {
+            //TODO: implement error message to show if collection is not valid
+            dispatch({ type: 'SET_ERROR_MESSAGE', payload: `Words collection is not valid, one or more words doesn't intercepting with the other words.`})
+          }
+
+          // Clear textarea input
+          setWordsValue('');
       } else {
-        //TODO: implement error message to show if collection is not valid
-         dispatch({ type: 'SET_ERROR_MESSAGE', payload: `Words collection is not valid, one or more words doesn't intercepting with the other words.`})
+        dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The input is not correct - the words should be separated by commas and must includes only letters and no white spaces, symbols or digits.`})
+        return;
       }
-
-     
-
-      // Clear textarea input
-      setWordsValue('');
-    }
   }
 
   return (

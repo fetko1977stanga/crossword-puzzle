@@ -8,7 +8,16 @@ export const splitWords = (input: string): string[] => {
 
 export const isInputValid = (input: string): boolean => {
     const words: string[] = splitWords(input);
-    return words.length < 2 || words.includes('') ? false : true;
+    const pattern:RegExp =  /[\s\W\d]+/g; // We set regex for characters we want to filter out
+    
+    for (let index = 0; index < words.length; index++) {
+        const word = words[index];
+        if (word.match(pattern)) {
+            // If any of the words includes digits, symbols or white spaces we return false
+            return false;
+        }
+    }
+    return true;
 }
 
 export const checkHorisontal = (word: string, crosswordBoard: string[][], startX: number, startY: number): any => {
