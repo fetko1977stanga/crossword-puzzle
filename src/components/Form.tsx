@@ -54,7 +54,7 @@ const Form = () => {
           // Clear textarea input
           setWordsValue('');
       } else {
-        dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The input is not correct - the words should be separated by commas and must includes only letters and no white spaces, symbols or digits.`})
+        dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The input is not correct - the words should be separated by commas and must includes only letters and no white spaces, symbols or digits. Words can't repeat.`})
         return;
       }
   }

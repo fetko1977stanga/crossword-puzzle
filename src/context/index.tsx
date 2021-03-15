@@ -9,7 +9,8 @@ const initialState: IState = {
     direction: 'down',
     startX: 12, 
     startY: 12,
-    errorMessage: ''
+    errorMessage: '',
+    collectionResorted: false
 }
 
 const defaultAction: React.Dispatch<IAction> = () => {};
@@ -44,6 +45,8 @@ function crosswordReducer(state: IState, action: IAction) {
             return {...state, errorMessage: action.payload !== '' ? action.payload : ''}
         case 'RESET_ADDED_WORDS_COLLECTION':
             return {...state, addedWords: []}
+        case 'COLLECTION_RESORTED':
+            return {...state, collectionResorted: true };
         default: {
             throw new Error(`Unhandled action type: ${action.type}`);
         }

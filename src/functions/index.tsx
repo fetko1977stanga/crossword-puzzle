@@ -9,6 +9,7 @@ export const splitWords = (input: string): string[] => {
 export const isInputValid = (input: string): boolean => {
     const words: string[] = splitWords(input);
     const pattern:RegExp =  /[\s\W\d]+/g; // We set regex for characters we want to filter out
+    const addedWordsMap: Map<string, number> = new Map(); // We add each word in a Map so we can track if words are repeating
     
     for (let index = 0; index < words.length; index++) {
         const word = words[index];
@@ -16,6 +17,12 @@ export const isInputValid = (input: string): boolean => {
             // If any of the words includes digits, symbols or white spaces we return false
             return false;
         }
+
+        if (addedWordsMap.get(word) !== undefined) {
+            return false;
+        }
+
+        addedWordsMap.set(word, index);
     }
     return true;
 }
@@ -231,7 +238,7 @@ const getNewCordinates = (startX: number, startY: number, wordIndex: number, new
     return { xPosition: startX, yPosition: startY };
 }
 
-export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: string[][], index: number, startX: number, startY: number, direction: string, dispatch: React.Dispatch<IAction>, addedWords: AddedWordInfo[], rotatedWords: AddedWordInfo[]) => {
+export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: string[][], index: number, startX: number, startY: number, direction: string, dispatch: React.Dispatch<IAction>, addedWords: AddedWordInfo[], rotatedWords: AddedWordInfo[], collectionResorted: boolean) => {
     if (index < wordsCollection.length) {
         const currentWord = wordsCollection[index];
         let wordInfo: AddedWordInfo = { word: currentWord, startX, startY, direction};
@@ -302,10 +309,18 @@ export const addWordsToBoard = (wordsCollection: string[], crosswordBoard: strin
                         dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: newWordsCollection });
                         return;
                     } else {
-                        const sortedArray = wordsCollection.sort((a, b) => b.length - a.length);
-                        dispatch({ type: 'RESET_BOARD'});
-                        dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
-                        return; // console.log(`one word is left - ${currentWord} and index is ${index} and words collection is ${wordsCollection}`);
+                        if (collectionResorted) {
+                            // We exit here because board can't be completed
+                            dispatch({ type: 'SET_ERROR_MESSAGE', payload: `The board with current words can't be completed.`});
+                            return;
+                        } else {
+                            const sortedArray = wordsCollection.sort((a, b) => b.length - a.length);
+                            dispatch({ type: 'RESET_BOARD'});
+                            dispatch({ type: 'UPDATE_WORDS_COLLECTION', payload: sortedArray });
+                            dispatch({ type: 'COLLECTION_RESORTED'});
+                            return;
+                        }
+                        
                     }
                 }
             }

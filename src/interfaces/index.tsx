@@ -7,6 +7,7 @@ export interface IState {
     startX: number;
     startY: number;
     errorMessage: string;
+    collectionResorted: boolean;
 }
 
 export interface IAction {
